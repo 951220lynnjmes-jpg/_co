@@ -15,5 +15,8 @@ CHIP And {
 
     PARTS:
     // Put your code here:
-    // ....
+    // 1. 將 a 和 b 輸入 Nand 閘，輸出暫存到 nandOut
+    Nand(a=a, b=b, out=nandOut);
+    // 2. 將 nandOut 輸入 Not 閘進行反轉，得到真正的 And 輸出
+    Not(in=nandOut, out=out);
 }
