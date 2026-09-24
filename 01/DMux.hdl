@@ -14,5 +14,12 @@ CHIP DMux {
     OUT a, b;
 
     PARTS:
-    // Put your code here:
+    // 反轉選擇訊號 sel
+    Not(in=sel, out=notSel);
+
+    // 當 sel 為 0 (notSel 為 1) 時，a = in；否則 a = 0
+    And(a=in, b=notSel, out=a);
+
+    // 當 sel 為 1 時，b = in；否則 b = 0
+    And(a=in, b=sel, out=b);
 }

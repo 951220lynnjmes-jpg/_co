@@ -20,3 +20,4 @@ CHIP And {
     // 2. 將 nandOut 輸入 Not 閘進行反轉，得到真正的 And 輸出
     Not(in=nandOut, out=out);
 }
+
