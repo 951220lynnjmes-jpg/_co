@@ -16,5 +16,18 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // 1. 計算遞增值 (regOut + 1)
+    Inc16(in=regOut, out=incOut);
+
+    // 2. 最低優先度 (inc)：決定要保持原值 regOut 還是使用遞增值 incOut
+    Mux16(a=regOut, b=incOut, sel=inc, out=outInc);
+
+    // 3. 次高優先度 (load)：若 load == 1 則覆蓋為輸入值 in
+    Mux16(a=outInc, b=in, sel=load, out=outLoad);
+
+    // 4. 最高優先度 (reset)：若 reset == 1 則強制覆蓋為全零 false (0)
+    Mux16(a=outLoad, b=false, sel=reset, out=nextVal);
+
+    // 5. 暫存器儲存：PC 固定每週期更新狀態 (load=true)，並分流 out 給外部與內部回授 regOut
+    Register(in=nextVal, load=true, out=out, out=regOut);
 }

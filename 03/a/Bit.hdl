@@ -14,5 +14,9 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    // 1. Mux 根據 load 決定要寫入新值 in (load=1) 還是保持原值 dffOut (load=0)
+    Mux(a=dffOut, b=in, sel=load, out=muxOut);
+
+    // 2. DFF 在下一個時脈週期更新值，並同時輸出至外部 out 與內部迴授信號 dffOut
+    DFF(in=muxOut, out=out, out=dffOut);
 }

@@ -15,5 +15,18 @@ CHIP RAM16K {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // 1. 使用高 2 位元 address[12..13] 將 load 信號分流給 4 個 RAM4K (l0~l3)
+    DMux4Way(in=load, sel=address[12..13], a=l0, b=l1, c=l2, d=l3);
+
+    // 2. 建立 4 個 RAM4K 模組：
+    //    - 皆接收相同的數據輸入 in
+    //    - 皆接收低 12 位元 address[0..11] 作為其內部位址
+    //    - 各自綁定由 DMux4Way 分配的 load 旗標 (l0~l3)
+    RAM4K(in=in, load=l0, address=address[0..11], out=r0);
+    RAM4K(in=in, load=l1, address=address[0..11], out=r1);
+    RAM4K(in=in, load=l2, address=address[0..11], out=r2);
+    RAM4K(in=in, load=l3, address=address[0..11], out=r3);
+
+    // 3. 根據高 2 位元 address[12..13] 從 4 個 RAM4K 的輸出 (r0~r3) 中選擇對應的資料輸出至 out
+    Mux4Way16(a=r0, b=r1, c=r2, d=r3, sel=address[12..13], out=out);
 }

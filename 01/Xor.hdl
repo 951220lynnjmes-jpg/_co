@@ -13,5 +13,14 @@ CHIP Xor {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    // 1. 取出 a 與 b 的反相值
+    Not(in=a, out=notA);
+    Not(in=b, out=notB);
+
+    // 2. 分別判斷兩種成立條件：(a 且 非b) 以及 (非a 且 b)
+    And(a=a, b=notB, out=aAndNotB);
+    And(a=notA, b=b, out=notAAndB);
+
+    // 3. 將兩種條件進行 OR 運算彙整輸出
+    Or(a=aAndNotB, b=notAAndB, out=out);
 }

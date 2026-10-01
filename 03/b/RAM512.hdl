@@ -16,4 +16,22 @@ CHIP RAM512 {
 
     PARTS:
     // Put your code here:
+// 1. 使用高 3 位元 address[6..8] 決定將 load 信號分流給哪一個 RAM64 (l0~l7)
+    DMux8Way(in=load, sel=address[6..8], a=l0, b=l1, c=l2, d=l3, e=l4, f=l5, g=l6, h=l7);
+
+    // 2. 建立 8 個 RAM64 模組：
+    //    - 皆接收相同的數據輸入 in
+    //    - 皆接收低 6 位元 address[0..5] 作為其內部位址
+    //    - 各自綁定由 DMux8Way 分配的 load 旗標 (l0~l7)
+    RAM64(in=in, load=l0, address=address[0..5], out=r0);
+    RAM64(in=in, load=l1, address=address[0..5], out=r1);
+    RAM64(in=in, load=l2, address=address[0..5], out=r2);
+    RAM64(in=in, load=l3, address=address[0..5], out=r3);
+    RAM64(in=in, load=l4, address=address[0..5], out=r4);
+    RAM64(in=in, load=l5, address=address[0..5], out=r5);
+    RAM64(in=in, load=l6, address=address[0..5], out=r6);
+    RAM64(in=in, load=l7, address=address[0..5], out=r7);
+
+    // 3. 根據高 3 位元 address[6..8] 從 8 個 RAM64 的輸出 (r0~r7) 中選擇對應的資料輸出至 out
+    Mux8Way16(a=r0, b=r1, c=r2, d=r3, e=r4, f=r5, g=r6, h=r7, sel=address[6..8], out=out);
 }

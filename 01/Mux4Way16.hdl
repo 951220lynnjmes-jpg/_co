@@ -16,5 +16,11 @@ CHIP Mux4Way16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // 第一階段：根據 sel[0] 分別選出 (a,b) 與 (c,d)
+    Mux16(a=a, b=b, sel=sel[0], out=outab);
+    Mux16(a=c, b=d, sel=sel[0], out=outcd);
+
+    // 第二階段：根據 sel[1] 從 outAB 與 outCD 中選出最終輸出
+    Mux16(a=outab, b=outcd, sel=sel[1], out=out);
+
 }

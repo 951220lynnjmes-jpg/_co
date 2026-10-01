@@ -16,5 +16,10 @@ CHIP DMux4Way {
     OUT a, b, c, d;
 
     PARTS:
-    // Put your code here:
+   // 第一階段：使用最高位元 sel[1] 將輸入訊號分成兩組 (AB組 與 CD組)
+    DMux(in=in, sel=sel[1], a=groupAB, b=groupCD);
+
+    // 第二階段：使用最低位元 sel[0] 分別決定兩組內的最終輸出
+    DMux(in=groupAB, sel=sel[0], a=a, b=b);
+    DMux(in=groupCD, sel=sel[0], a=c, b=d);
 }

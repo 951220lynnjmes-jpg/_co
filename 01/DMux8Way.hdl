@@ -16,5 +16,10 @@ CHIP DMux8Way {
     OUT a, b, c, d, e, f, g, h;
 
     PARTS:
-    // Put your code here:
+    // 第一階段：利用最高位元 sel[2] 將輸入訊號分成前半段 (ABCD) 與後半段 (EFGH)
+    DMux(in=in, sel=sel[2], a=groupABCD, b=groupEFGH);
+
+    // 第二階段：利用 DMux4Way 搭配低位元 sel[0..1] 分別進行 4 路分流
+    DMux4Way(in=groupABCD, sel=sel[0..1], a=a, b=b, c=c, d=d);
+    DMux4Way(in=groupEFGH, sel=sel[0..1], a=e, b=f, c=g, d=h);
 }
