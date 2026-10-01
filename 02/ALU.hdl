@@ -42,5 +42,42 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+   // --- 1. 處理 x 輸入 (zx, nx) ---
+    // if (zx == 1) x = 0
+    Mux16(a=x, b=false, sel=zx, out=x0);
+    // if (nx == 1) x = !x
+    Not16(in=x0, out=notX0);
+    Mux16(a=x0, b=notX0, sel=nx, out=xProcessed);
+
+    // --- 2. 處理 y 輸入 (zy, ny) ---
+    // if (zy == 1) y = 0
+    Mux16(a=y, b=false, sel=zy, out=y0);
+    // if (ny == 1) y = !y
+    Not16(in=y0, out=notY0);
+    Mux16(a=y0, b=notY0, sel=ny, out=yProcessed);
+
+    // --- 3. 執行核心計算 (f) ---
+    // f == 1 ? (x + y) : (x & y)
+    Add16(a=xProcessed, b=yProcessed, out=addOut);
+    And16(a=xProcessed, b=yProcessed, out=andOut);
+    Mux16(a=andOut, b=addOut, sel=f, out=fOut);
+
+    // --- 4. 處理輸出反相 (no) 與腳位分流 ---
+    // if (no == 1) out = !fOut
+    Not16(in=fOut, out=notFOut);
+    Mux16(
+        a=fOut, 
+        b=notFOut, 
+        sel=no, 
+        out=out, 
+        out[0..7]=outLow, 
+        out[8..15]=outHigh, 
+        out[15]=ng
+    );
+
+    // --- 5. 計算 zr 旗標 (判斷 16 個位元是否全為 0) ---
+    Or8Way(in=outLow, out=orLow);
+    Or8Way(in=outHigh, out=orHigh);
+    Or(a=orLow, b=orHigh, out=nonzero);
+    Not(in=nonzero, out=zr);
 }

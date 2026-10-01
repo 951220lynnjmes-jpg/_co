@@ -13,5 +13,6 @@ CHIP Inc16 {
     OUT out[16];
 
     PARTS:
-   // Put you code here:
+   // 將輸入 in 與 1 (b[0]=true, 其餘預設為 false) 送入 Add16 進行加法運算
+    Add16(a=in, b[0]=true, out=out);
 }

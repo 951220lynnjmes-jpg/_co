@@ -13,5 +13,9 @@ CHIP HalfAdder {
         carry;  // Left bit of a + b
 
     PARTS:
-    // Put you code here:
+    // 1. sum 位元：當 a 與 b 不相同時為 1 (a XOR b)
+    Xor(a=a, b=b, out=sum);
+
+    // 2. carry 位元：當 a 與 b 同時為 1 時產生進位 (a AND b)
+    And(a=a, b=b, out=carry);
 }
