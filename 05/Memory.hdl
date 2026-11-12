@@ -27,5 +27,32 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+  // ------------------------------------------------------------------------
+    // 1. 寫入控制位址解碼 (Write Address Demuxing)
+    // ------------------------------------------------------------------------
+    // 根據 address[13..14] 決定 load 訊號要傳送到哪一個硬體單元：
+    // - 00 或 01 (address[14] == 0): RAM16K (0x0000 - 0x3FFF)
+    // - 10 (address[14..13] == 10): Screen (0x4000 - 0x5FFF)
+    // - 11 (address[14..13] == 11): Keyboard (0x6000，唯讀單元，無視 load)
+    DMux4Way(in=load, sel=address[13..14], a=loadRam1, b=loadRam2, c=loadScreen, d=loadKbd);
+    Or(a=loadRam1, b=loadRam2, out=loadRam); // 00 與 01 皆屬於 RAM16K 範圍
+
+    // ------------------------------------------------------------------------
+    // 2. 記憶體晶片與 I/O 模組實作
+    // ------------------------------------------------------------------------
+    // RAM16K: 使用位址低 14 位 (address[0..13])
+    RAM16K(in=in, load=loadRam, address=address[0..13], out=ramOut);
+
+    // Screen: 8K 記憶體映射，使用位址低 13 位 (address[0..12])
+    Screen(in=in, load=loadScreen, address=address[0..12], out=screenOut);
+
+    // Keyboard: 鍵盤輸入映射暫存器 (唯讀，無寫入腳位)
+    Keyboard(out=kbdOut);
+
+    // ------------------------------------------------------------------------
+    // 3. 讀取資料多工選擇 (Read Data Multiplexing)
+    // ------------------------------------------------------------------------
+    // 根據 address[13..14] 選擇對應的輸出資料傳回 CPU
+    Mux4Way16(a=ramOut, b=ramOut, c=screenOut, d=kbdOut, sel=address[13..14], out=out);
+
 }

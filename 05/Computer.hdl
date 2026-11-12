@@ -18,6 +18,20 @@ CHIP Computer {
 
     IN reset;
 
+
+
     PARTS:
-    // Put your code here:
+    // 1. Instruction Memory (ROM)
+    // Fetches the instruction at address pc
+    ROM32K(address=pc, out=instruction);
+
+    // 2. Central Processing Unit (CPU)
+    // Executes instructions and interacts with Memory & ROM
+    CPU(inM=memOut, instruction=instruction, reset=reset, 
+        outM=outM, writeM=writeM, addressM=addressM, pc=pc);
+
+    // 3. Data Memory (RAM + Screen + Keyboard)
+    // Handles reading/writing to memory based on CPU output
+    Memory(in=outM, load=writeM, address=addressM, out=memOut);
+
 }
